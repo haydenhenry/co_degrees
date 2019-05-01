@@ -27,19 +27,37 @@ try:
 
     class Degree(Resource):
         def get(self):
-            pg_select_degrees_query = 'select * from college.degrees'
+            pg_select_degrees_query = ('select d.year, '
+                                              'il.institutionlevel, '
+                                              'd.agedesc, '
+                                              'd.gender, '
+                                              'r.residency, '
+                                              'dl.degreelevel, '
+                                              'e.ethnicity, '
+                                              'pn.programname '
+                                        'from college.degrees d '
+                                        'join college.degreelevels dl '
+                                            'on d.degreelevelid = dl.id '
+                                        'join college.ethnicities e '
+                                            'on d.ethnicityid = e.id '
+                                        'join college.institutionlevels il '
+                                            'on d.institutionlevelid = il.id '
+                                        'join college.programnames pn '
+                                            'on d.programname = pn.id '
+                                        'join college.residencies r '
+                                            'on d.residencyid = r.id ')
             cur.execute(pg_select_degrees_query)
             degree_records = cur.fetchall()
             return degree_records
 
-        def post(self):
-            parser.add_argument('quote', type=str)
-            args = parser.parse_args()
+        # def post(self):
+        #     parser.add_argument('quote', type=str)
+        #     args = parser.parse_args()
 
-            return {
-                'status': True,
-                'quote': '{} added. Good'.format(args['quote'])
-            }
+        #     return {
+        #         'status': True,
+        #         'quote': '{} added. Good'.format(args['quote'])
+        #     }
 
     class Ethnicity(Resource):
         def get(self):
@@ -54,19 +72,6 @@ try:
             cur.execute(pg_select_instlvls_query)
             instlvls_records = cur.fetchall()
             return instlvls_records
-
-    class InstitutionName(Resource):
-        def get(self):
-            pg_select_instnames_query = 'select * from college.institutionnames'
-            cur.execute(pg_select_instnames_query)
-            instname_records = cur.fetchall()
-
-            # print("\nPrint each row and it's columns' values:\n")
-            # for row in instname_records:
-            #     print("id= ", row[0])
-            #     print("institutionname", row[1], '\n')
-
-            return instname_records
     
     class ProgramName(Resource):
         def get(self):
@@ -80,7 +85,6 @@ try:
     api.add_resource(Degree, '/degrees')
     api.add_resource(Ethnicity, '/degrees/ethnicities')
     api.add_resource(InstitutionLevel, '/degrees/institutionlevels')
-    api.add_resource(InstitutionName, '/degrees/institutionnames')
     api.add_resource(ProgramName, '/degrees/programnames')
 
     if __name__ == '__main__':
