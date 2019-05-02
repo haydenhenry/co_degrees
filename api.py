@@ -1,5 +1,5 @@
 from flask import Flask
-from flask_restful import Resource, Api, reqparse
+from flask_restful import Resource, Api, reqparse, fields, marshal_with
 import psycopg2
 
 try:
@@ -18,15 +18,35 @@ try:
     api = Api(app)
 
     parser = reqparse.RequestParser()
+
+    resources = {
+        'id': fields.String,
+        'degreelevel': fields.String,
+    }
     class DegreeLevel(Resource):
-        def get(self):
+        @marshal_with(resources, envelope='degreelevels')
+        def get(self, **kwargs):
             pg_select_degreelvls_query = 'select * from college.degreelevels'
             cur.execute(pg_select_degreelvls_query)
             degreelvl_records = cur.fetchall()
+
+            # for key, value in kwargs.items():
+            #     body = body.replace('[%s]' % key.toupper(), value)
             return degreelvl_records
 
+    # resource_fields = {
+    #     'year': fields.String,
+    #     'institutionlevel': fields.String,
+    #     'agedesc': fields.String,
+    #     'gender': fields.String,
+    #     'residency': fields.String,
+    #     'degreelevel': fields.String,
+    #     'ethnicity': fields.String,
+    #     'programname': fields.String,
+    # }
     class Degree(Resource):
-        def get(self):
+        # @marshal_with(resource_fields, envelope='resource')
+        def get(self, **kwargs):
             pg_select_degrees_query = ('select d.year, '
                                               'il.institutionlevel, '
                                               'd.agedesc, '
