@@ -24,7 +24,7 @@ try:
         'degreelevel': fields.String,
     }
     class DegreeLevel(Resource):
-        @marshal_with(resources, envelope='degreelevels')
+        # @marshal_with(resources, envelope='degreelevels')
         def get(self, **kwargs):
             pg_select_degreelvls_query = 'select * from college.degreelevels'
             cur.execute(pg_select_degreelvls_query)
